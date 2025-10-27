@@ -10,16 +10,14 @@ export default function BookCard({ title, author, imageUrl, onClick }: Props) {
   return (
     <Card onClick={onClick}>
       <CardHeader>
-        {imageUrl && (
-          <div className="relative w-full h-56 mb-2">
-            <Image
-              src={imageUrl}
-              alt={title}
-              fill
-              className="object-cover rounded-md"
-            />
-          </div>
-        )}
+        <div className="relative w-full h-56 mb-2">
+          <Image
+            src={imageUrl}
+            alt={title}
+            fill
+            className="object-cover rounded-md"
+          />
+        </div>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{author}</CardDescription>
       </CardHeader>
