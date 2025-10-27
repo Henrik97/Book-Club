@@ -7,7 +7,7 @@ interface Book {
   id: string;
   title: string;
   author: string;
-  image_url: string | null;
+  image_url: string;
   description?: string | null;
 }
 
@@ -26,6 +26,10 @@ export default function Library() {
 
     fetchBooks();
   }, []);
+
+  function handleClick(id: string) {
+    console.log(id);
+  }
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
       {books.map((book) => (
@@ -33,7 +37,8 @@ export default function Library() {
           key={book.id}
           title={book.title}
           author={book.author}
-          // imageUrl={book.image_url || undefined}
+          imageUrl={book.image_url}
+          onClick={() => handleClick(book.id)}
         />
       ))}
     </div>
