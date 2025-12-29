@@ -4,7 +4,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Book } from "@/models/book";
+import { getCoverUrl } from "@/helpers/coverUrl";
+import { Book } from "@/types/models";
 import Image from "next/image";
 
 interface BookDialogProps {
@@ -16,6 +17,8 @@ interface BookDialogProps {
 export function BookDialog({ open, onOpenChange, book }: BookDialogProps) {
   if (!book) return null;
 
+  const coverUrl = getCoverUrl(book.image_path);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -24,9 +27,9 @@ export function BookDialog({ open, onOpenChange, book }: BookDialogProps) {
           <p className="text-sm text-muted-foreground">{book.author}</p>
         </DialogHeader>
         <div className="mt-2 space-y-2">
-          {book.image_url && (
+          {book.image_path && (
             <Image
-              src={book.image_url}
+              src={coverUrl || "/placeholder-book.png"}
               alt={book.title}
               className="w-full h-200 object-cover rounded-md"
               width={40}
