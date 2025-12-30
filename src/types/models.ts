@@ -1,3 +1,5 @@
+import { MonthNumber } from "./months";
+
 export type ISOTimestamp = string;
 
 export interface Book {
@@ -20,3 +22,5 @@ export interface Reading {
 }
 
 export type TierRating = "S" | "A" | "B" | "C" | "D" | "E" | "F";
+
+export type Plan = Record<MonthNumber, string[]>;

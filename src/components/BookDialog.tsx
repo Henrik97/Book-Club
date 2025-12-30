@@ -34,6 +34,7 @@ export function BookDialog({ open, onOpenChange, book }: BookDialogProps) {
               className="w-full h-200 object-cover rounded-md"
               width={40}
               height={100}
+              unoptimized
             />
           )}
           <p className="text-sm">{book.description || "No description yet."}</p>

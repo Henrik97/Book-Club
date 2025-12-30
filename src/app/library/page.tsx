@@ -2,7 +2,7 @@
 import BookCard from "@/components/BookCard";
 import { useState, useEffect } from "react";
 import { BookDialog } from "@/components/BookDialog";
-import { Book } from "@/models/book";
+import { Book } from "@/types/models";
 import { Button } from "@/components/ui/button";
 import AddBookDialog from "@/components/AddBookDialog";
 import { createClient } from "@/lib/supabase/client";
@@ -25,7 +25,7 @@ export default function Library() {
     };
 
     fetchBooks();
-  }, []);
+  }, [supabase]);
 
   function handleClick(newSelectedBook: Book) {
     setSelectedBook(newSelectedBook);

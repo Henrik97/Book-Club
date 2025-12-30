@@ -6,7 +6,6 @@ import ImageUploader from "./ImageUploader";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogFooter } from "./ui/dialog";
 import { Input } from "./ui/input";
-import { getCoverUrl } from "@/helpers/coverUrl";
 
 interface Props {
   open: boolean;
@@ -30,8 +29,6 @@ export default function AddBookDialog({ open, onOpenChange }: Props) {
   const [error, setError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const supabase = createClient();
-
-  const coverUrl = getCoverUrl(form.imagePath);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
