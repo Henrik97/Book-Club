@@ -4,22 +4,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getCoverUrl } from "@/helpers/coverUrl";
+import { Book } from "@/types/models";
 import Image from "next/image";
 
 interface BookDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  book: {
-    title: string;
-    author: string;
-    description?: string;
-    imageUrl?: string;
-    rating?: number;
-  } | null;
+  book: Book;
 }
 
 export function BookDialog({ open, onOpenChange, book }: BookDialogProps) {
   if (!book) return null;
+
+  const coverUrl = getCoverUrl(book.image_path);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -29,11 +27,13 @@ export function BookDialog({ open, onOpenChange, book }: BookDialogProps) {
           <p className="text-sm text-muted-foreground">{book.author}</p>
         </DialogHeader>
         <div className="mt-2 space-y-2">
-          {book.imageUrl && (
+          {book.image_path && (
             <Image
-              src={book.imageUrl}
+              src={coverUrl || "/placeholder-book.png"}
               alt={book.title}
-              className="w-full h-64 object-cover rounded-md"
+              className="w-full h-200 object-cover rounded-md"
+              width={40}
+              height={100}
             />
           )}
           <p className="text-sm">{book.description || "No description yet."}</p>
