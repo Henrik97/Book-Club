@@ -10,7 +10,7 @@ export default function BookCatalog({ books }: Props) {
     <div>
       <span>Book Catalog Component</span>
 
-      <div className="grid grid-cols-2 gap-4 w-80">
+      <div className="flex gap-4">
         {books.map((book) => (
           <DraggableBookCard
             key={book.id}

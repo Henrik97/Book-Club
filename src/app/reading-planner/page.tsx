@@ -5,11 +5,9 @@ import { Book } from "@/types/models";
 import { MonthNumber } from "@/types/months";
 import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect, useMemo } from "react";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import Image from "next/image";
-import { getCoverUrl } from "@/helpers/coverUrl";
+import EditReadSpanDialog from "@/components/EditReadSpanDialog";
 
 export type ReadingsDraft = {
   id: string;
@@ -20,28 +18,52 @@ export type ReadingsDraft = {
 
 export default function ReadingsPlanner() {
   const [books, setBooks] = useState<Book[]>([]);
-  const [booksInCatalog, setBooksInCatalog] = useState<Book[]>([]);
+  const [readBookIds, setReadBookIds] = useState<Set<string>>(new Set());
   const [readings, setReadings] = useState<ReadingsDraft[]>([]);
   const [editSpanDialog, setEditSpanDialog] = useState(false);
-  const [editBook, setBookForEditing] = useState<Book | null>(null);
+  const [editingReading, setEditingReading] = useState<ReadingsDraft | null>(
+    null,
+  );
+  const [year, setYear] = useState<number>(new Date().getFullYear());
   const supabase = createClient();
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      const { data, error } = await supabase.from("books").select("*");
-      if (error) {
-        console.error("Error fetching books:", error.message);
+    const fetchData = async () => {
+      const { data: booksData, error: booksError } = await supabase
+        .from("books")
+        .select("*");
+      if (booksError) {
+        console.error("Error fetching books:", booksError.message);
       } else {
-        setBooks(data || []);
-        setBooksInCatalog(data || []);
+        setBooks(booksData || []);
+      }
+      const { data: readingsData, error: readingsError } = await supabase
+        .from("readings")
+        .select("book_id");
+      if (readingsError) {
+        console.log(readingsError);
+      } else {
+        setReadBookIds(new Set((readingsData ?? []).map((r) => r.book_id)));
       }
     };
-    fetchBooks();
+    fetchData();
   }, [supabase]);
 
-  const booksById = useMemo(() => {
-    return new Map(books.map((book) => [book.id, book]));
-  }, [books]);
+  const plannedBookIds = useMemo(
+    () => new Set(readings.map((r) => r.bookId)),
+    [readings],
+  );
+
+  const booksInCatalog = useMemo(() => {
+    return books.filter(
+      (b) => !readBookIds.has(b.id) && !plannedBookIds.has(b.id),
+    );
+  }, [books, readBookIds, plannedBookIds]);
+
+  const booksById = useMemo(
+    () => new Map(books.map((b) => [b.id, b])),
+    [books],
+  );
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -50,19 +72,19 @@ export default function ReadingsPlanner() {
     const activeId = String(active.id); // e.g. "book:uuid"
     const overId = String(over.id); // e.g. "month:3"
 
-    const bookId = activeId.replace("book:", "");
     if (!overId.startsWith("month:")) return;
     const month = Number(overId.replace("month:", "")) as MonthNumber;
 
-    // if (activeId === "book:") {
     if (activeId.startsWith("book:")) {
+      const bookId = activeId.replace("book:", "");
+      if (plannedBookIds.has(bookId)) return;
       setReadings((prev) => [
         ...prev,
         { id: crypto.randomUUID(), bookId, startMonth: month, endMonth: month },
       ]);
     }
 
-    if (activeId.startsWith("reading")) {
+    if (activeId.startsWith("reading:")) {
       const readingId = activeId.replace("reading:", "");
       setReadings((prev) =>
         prev.map((item) => {
@@ -84,46 +106,72 @@ export default function ReadingsPlanner() {
     setReadings((prev) => prev.filter((r) => r.id !== readingId));
   }
 
-  function createReadingPlan() {
-    console.log(readings);
+  async function createReadingPlan() {
+    const { error } = await supabase.from("readings").insert(
+      readings.map((r) => ({
+        book_id: r.bookId,
+        year: year,
+        start_month: r.startMonth,
+        end_month: r.endMonth,
+      })),
+    );
+    if (error) console.log(error.message);
   }
 
   function onEditSpan(readingId: string) {
     const reading = readings.find((r) => r.id === readingId);
     const book = booksById.get(reading?.bookId || "");
     if (!book) return;
-    setBookForEditing(book);
+    if (!reading) return;
+    setEditingReading(reading);
     setEditSpanDialog(true);
+  }
+
+  function handleEditSpanSave(endMonth: number) {
+    if (!editingReading) return;
+
+    if (endMonth < editingReading.startMonth || endMonth > 12) return;
+    const newEndMonth = endMonth as MonthNumber;
+
+    setReadings((prev) =>
+      prev.map((item) =>
+        item.id === editingReading.id
+          ? { ...item, endMonth: newEndMonth }
+          : item,
+      ),
+    );
+
+    setEditSpanDialog(false);
+    setEditingReading(null);
   }
 
   return (
     <>
-      <DndContext onDragEnd={handleDragEnd}>
-        <div className="flex flex-row gap-8 p-4">
+      <Button onClick={createReadingPlan}>Create Reading Plan</Button>
+      <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+        <div className="flex flex-col gap-8 p-4">
+          <BookCatalog books={booksInCatalog} />
           <ReadingYearCards
-            year={2026}
+            year={year}
             readings={readings}
             booksById={booksById}
             onRemoveBook={removeBookFromPlan}
             onEditSpan={onEditSpan}
           />
-          <BookCatalog books={booksInCatalog} />
         </div>
       </DndContext>
-      <Button onClick={createReadingPlan}>Create Reading Plan</Button>
 
-      {editBook && (
-        <Dialog open={editSpanDialog} onOpenChange={setEditSpanDialog}>
-          <DialogContent className="h-96 w-96">
-            <DialogTitle>Change Period</DialogTitle>
-            <Image
-              src={getCoverUrl(editBook?.image_path)}
-              fill
-              alt={editBook.title}
-              className="rounded"
-            />
-          </DialogContent>
-        </Dialog>
+      {editingReading && (
+        <EditReadSpanDialog
+          open={editSpanDialog}
+          book={booksById.get(editingReading.bookId)}
+          reading={editingReading}
+          onOpenChange={(open) => {
+            setEditSpanDialog(open);
+            if (!open) setEditingReading(null);
+          }}
+          handleSave={handleEditSpanSave}
+        />
       )}
     </>
   );
