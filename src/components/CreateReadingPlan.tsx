@@ -3,7 +3,7 @@ import { Card, CardHeader } from "./ui/card";
 import { Plan, Book } from "@/types/models";
 import { useDroppable } from "@dnd-kit/core";
 import { DraggableBookCard } from "./DraggableBookCard";
-import { ReadingsDraft } from "@/app/reading-planner/page";
+import { ReadingsDraft } from "@/app/readingplan/[year]/page";
 import BookCoverImage from "./BookCoverImage";
 import { getCoverUrl } from "@/helpers/coverUrl";
 import { Fragment } from "react";
@@ -80,26 +80,30 @@ function MonthCard({
           readings.map((reading) => {
             const book = booksById.get(reading.bookId);
             if (!book) return null;
-            const coverUrl = getCoverUrl(book.image_path);
+            const coverUrl =
+              book.image_url ||
+              (book.image_path
+                ? getCoverUrl(book.image_path)
+                : "/no_cover_available.png");
 
             return (
               <Fragment key={reading.id}>
                 {reading.startMonth === month ? (
-                  <div>
+                  <div className="w-[90px]">
                     <DraggableBookCard
-                      type={"reading"}
+                      type="reading"
                       book={book}
                       id={reading.id}
                     />
-                    <div className="flex space-x-2 mt-1 justify-center">
+                    <div className="flex flex-col gap-1 mt-1 text-center">
                       <button
-                        className="text-xs hover:underline"
+                        className="text-[10px] hover:underline"
                         onClick={() => onEditSpan(reading.id)}
                       >
-                        Edit Span
+                        Edit
                       </button>
                       <button
-                        className="text-xs text-red-500 hover:underline"
+                        className="text-[10px] text-red-500 hover:underline"
                         onClick={() => onRemove(reading.id)}
                       >
                         Remove
@@ -107,7 +111,7 @@ function MonthCard({
                     </div>
                   </div>
                 ) : (
-                  <Card className={"p-0 overflow-hidden opacity-50"}>
+                  <Card className="w-[90px] p-0 overflow-hidden opacity-50">
                     <BookCoverImage coverUrl={coverUrl} title={book.title} />
                   </Card>
                 )}

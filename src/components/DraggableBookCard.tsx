@@ -25,7 +25,11 @@ export function DraggableBookCard({ id, book, type }: props) {
     ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
     : undefined;
 
-  const coverUrl = getCoverUrl(book?.image_path);
+  const coverUrl =
+    book.image_url ||
+    (book.image_path
+      ? getCoverUrl(book.image_path)
+      : "/no_cover_available.png");
 
   return (
     <Tooltip>
@@ -33,7 +37,9 @@ export function DraggableBookCard({ id, book, type }: props) {
         <Card
           ref={setNodeRef}
           style={style}
-          className={` relative overflow-hidden p-0 cursor-grab ${isDragging ? "opacity-50" : ""}`}
+          className={` z-9999 w-[90px] aspect-3/4 shrink-0 relative overflow-hidden p-0 cursor-grab ${
+            isDragging ? "opacity-50" : ""
+          }`}
           {...listeners}
           {...attributes}
         >

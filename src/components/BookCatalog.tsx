@@ -7,18 +7,24 @@ interface Props {
 
 export default function BookCatalog({ books }: Props) {
   return (
-    <div>
-      <span>Book Catalog Component</span>
+    <div className="space-y-2 min-w-0">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-muted-foreground">
+          Book Catalog
+        </span>
+        <span className="text-xs text-muted-foreground">
+          {books.length} available
+        </span>
+      </div>
 
-      <div className="flex gap-4">
-        {books.map((book) => (
-          <DraggableBookCard
-            key={book.id}
-            type={"book"}
-            id={book.id}
-            book={book}
-          />
-        ))}
+      <div className="w-full overflow-x-auto">
+        <div className="flex gap-3 pb-3">
+          {books.map((book) => (
+            <div key={book.id} className="shrink0">
+              <DraggableBookCard type="book" id={book.id} book={book} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

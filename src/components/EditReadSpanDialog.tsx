@@ -1,4 +1,4 @@
-import { ReadingsDraft } from "@/app/reading-planner/page";
+import { ReadingsDraft } from "@/app/readingplan/[year]/page";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -42,7 +42,12 @@ export default function EditReadSpanDialog({
 
   if (!book) return <div>something went wrong</div>;
 
-  const coverUrl = getCoverUrl(book.image_path);
+  const coverUrl =
+    book.image_url ||
+    (book.image_path
+      ? getCoverUrl(book.image_path)
+      : "/no_cover_available.png");
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
