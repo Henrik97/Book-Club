@@ -63,9 +63,7 @@ export default function Topbar() {
         </NavigationMenu>
 
         {/* Right side (optional) */}
-        <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="italic">“In vino veritas.”</span>
-        </div>
+        <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground"></div>
       </div>
     </header>
   );

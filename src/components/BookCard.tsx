@@ -21,7 +21,7 @@ export default function BookCard({ book, onClick }: Props) {
       className="cursor-pointer hover:shadow-md transition-shadow"
     >
       <CardHeader className="space-y-2">
-        <div className="relative w-full aspect-[3/4] overflow-hidden rounded-md bg-muted">
+        <div className="relative w-full aspect-3/4 overflow-hidden rounded-md bg-muted">
           <Image
             src={coverUrl}
             alt={book.title}

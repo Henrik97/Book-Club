@@ -27,3 +27,10 @@ export interface Reading {
 export type TierRating = "S" | "A" | "B" | "C" | "D" | "E" | "F";
 
 export type Plan = Record<MonthNumber, string[]>;
+
+export type YearlyRatingRow = {
+  year: number;
+  reading_id: string;
+  tier: TierKey;
+  position: number;
+};
