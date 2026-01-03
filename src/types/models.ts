@@ -1,13 +1,18 @@
+import { MonthNumber } from "./months";
+
 export type ISOTimestamp = string;
 
-export interface Book {
+export type Book = {
   id: string;
   title: string;
   author: string;
-  image_path: string;
   description?: string | null;
-  created_at: ISOTimestamp;
-}
+  image_path?: string | null;
+  image_url?: string | null;
+  physical_book_link?: string | null;
+  audio_book_link?: string | null;
+  created_at?: string;
+};
 
 export interface Reading {
   id: string;
@@ -20,3 +25,12 @@ export interface Reading {
 }
 
 export type TierRating = "S" | "A" | "B" | "C" | "D" | "E" | "F";
+
+export type Plan = Record<MonthNumber, string[]>;
+
+export type YearlyRatingRow = {
+  year: number;
+  reading_id: string;
+  tier: TierKey;
+  position: number;
+};
