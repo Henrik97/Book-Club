@@ -11,9 +11,21 @@ type Props = {
   readingId: string;
   book: Book;
   locked?: boolean;
+  overlay?: boolean; // ✅ support DragOverlay
 };
 
-export default function TierBookCard({ readingId, book, locked }: Props) {
+export default function TierBookCard({
+  readingId,
+  book,
+  locked = false,
+  overlay = false,
+}: Props) {
+  // ✅ still call hook every render (rules-of-hooks safe)
+  const sortable = useSortable({
+    id: readingId,
+    disabled: locked || overlay,
+  });
+
   const {
     attributes,
     listeners,
@@ -21,10 +33,7 @@ export default function TierBookCard({ readingId, book, locked }: Props) {
     transform,
     transition,
     isDragging,
-  } = useSortable({
-    id: readingId,
-    disabled: locked,
-  });
+  } = sortable;
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -41,10 +50,11 @@ export default function TierBookCard({ readingId, book, locked }: Props) {
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className={`relative w-22.5 h-32.5 rounded-md overflow-hidden border bg-muted cursor-grab
+      {...(!overlay ? attributes : {})}
+      {...(!overlay ? listeners : {})}
+      className={`relative w-22.5 h-32.5 rounded-md overflow-hidden border bg-muted
         transition hover:scale-[1.03] hover:shadow-md
+        ${overlay ? "cursor-grabbing shadow-xl scale-105" : "cursor-grab"}
         ${isDragging ? "opacity-60 scale-105 shadow-lg" : ""}
         ${locked ? "opacity-40 cursor-not-allowed hover:scale-100" : ""}`}
       title={locked ? "Not finished yet" : book.title}
@@ -57,12 +67,14 @@ export default function TierBookCard({ readingId, book, locked }: Props) {
         unoptimized
       />
 
-      <div className="absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-black/60 to-transparent" />
+      {/* ✅ FIX tailwind class */}
+      <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/60 to-transparent" />
+
       <div className="absolute bottom-1 left-1 right-1 text-[10px] text-white font-medium truncate">
         {book.title}
       </div>
 
-      {locked && (
+      {locked && !overlay && (
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
           <div className="flex items-center gap-1 text-white text-xs font-semibold">
             <Lock size={14} />

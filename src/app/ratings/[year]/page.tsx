@@ -40,6 +40,7 @@ const initialTier: TierState = {
   B: [],
   C: [],
   D: [],
+  F: [],
   UNRATED: [],
 };
 

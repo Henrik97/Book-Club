@@ -23,7 +23,7 @@ import { Book } from "@/types/models";
 import { ReadingRow } from "@/app/ratings/[year]/page";
 import TierBookCardOverlay from "./TierBookCardOverlay";
 
-export type TierKey = "S" | "A" | "B" | "C" | "D";
+export type TierKey = "S" | "A" | "B" | "C" | "D" | "F";
 export type ListKey = TierKey | "UNRATED";
 export type TierState = Record<ListKey, string[]>;
 
@@ -42,6 +42,7 @@ const TIERS: { key: TierKey; label: string }[] = [
   { key: "B", label: "B" },
   { key: "C", label: "C" },
   { key: "D", label: "D" },
+  { key: "F", label: "F" },
 ];
 
 function findContainer(state: TierState, readingId: string): ListKey | null {
@@ -206,7 +207,7 @@ export default function TierBoard({
             items={tierState.UNRATED}
             strategy={rectSortingStrategy}
           >
-            <div className="flex flex-wrap gap-3 min-h-30">
+            <div className="flex flex-wrap gap-3">
               {tierState.UNRATED.length === 0 ? (
                 <p className="text-xs text-muted-foreground">
                   All books are rated 🎉
@@ -235,7 +236,7 @@ export default function TierBoard({
 
       <DragOverlay>
         {activeBook ? (
-          <div className="scale-105">
+          <div>
             <TierBookCardOverlay book={activeBook} />
           </div>
         ) : null}
