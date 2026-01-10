@@ -57,6 +57,16 @@ export default function RatingsHomePage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>All Time</CardTitle>
+            </CardHeader>
+            <CardContent className="flex gap-2">
+              <Link href={"/ratings/all-time"} className="w-full">
+                <Button className="w-full">Open tier list</Button>
+              </Link>
+            </CardContent>
+          </Card>
           {years.map((y) => (
             <Card key={y}>
               <CardHeader>
