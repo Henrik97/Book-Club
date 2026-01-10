@@ -182,7 +182,6 @@ export default function TierBoard({
               booksById={booksById}
               readingsById={readingsById}
               canDragAction={canDragAction}
-              isOverRow={overContainer === tier.key}
             />
           </SortableContext>
         ))}
