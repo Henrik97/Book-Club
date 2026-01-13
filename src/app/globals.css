@@ -120,3 +120,76 @@
     @apply bg-background text-foreground;
   }
 }
+
+.fog {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(
+      circle at 20% 40%,
+      rgba(255, 255, 255, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 70% 60%,
+      rgba(255, 255, 255, 0.06),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 40% 70%,
+      rgba(255, 255, 255, 0.05),
+      transparent 55%
+    );
+  filter: blur(18px);
+  opacity: 0.35;
+  mix-blend-mode: screen;
+  transform: translate3d(0, 0, 0);
+}
+
+.fog-1 {
+  animation: fogMove1 14s ease-in-out infinite;
+}
+.fog-2 {
+  animation: fogMove2 18s ease-in-out infinite;
+  opacity: 0.25;
+}
+.fog-3 {
+  animation: fogMove3 22s ease-in-out infinite;
+  opacity: 0.18;
+}
+
+@keyframes fogMove1 {
+  0% {
+    transform: translateX(-2%) translateY(0%) scale(1.02);
+  }
+  50% {
+    transform: translateX(3%) translateY(-2%) scale(1.06);
+  }
+  100% {
+    transform: translateX(-2%) translateY(0%) scale(1.02);
+  }
+}
+
+@keyframes fogMove2 {
+  0% {
+    transform: translateX(3%) translateY(1%) scale(1.03);
+  }
+  50% {
+    transform: translateX(-3%) translateY(-1%) scale(1.07);
+  }
+  100% {
+    transform: translateX(3%) translateY(1%) scale(1.03);
+  }
+}
+
+@keyframes fogMove3 {
+  0% {
+    transform: translateX(0%) translateY(2%) scale(1.02);
+  }
+  50% {
+    transform: translateX(2%) translateY(-2%) scale(1.08);
+  }
+  100% {
+    transform: translateX(0%) translateY(2%) scale(1.02);
+  }
+}
